@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="ASCII"?>
+<hazardlog_:HazardLog xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:hazardlog_="http://org.eclipse.acme/1.0/hazardlog">
+  <hazards description="AUV collides with obstacles" number="H1">
+    <causes description="AUV system failure leads to AUV collision with obstacle" number="c1-1">
+      <causes description="operator can not obtain the control from the state in which the operator is not in control when requesting" number="C1-1.1">
+        <controlMeasure description="Operator shall obtain the control from any operational state in which the operator is not in control when requesting." number="M1-1.1-1">
+          <controlMeasure description="Query: each state except OCM should have a outgoing transition whose trigger is reqOCM, and target is OCM" number="M1-1.1-1.1">
+            <verificationofEffectiveness description="Model query:  if the required transition exists." number="VR1-1-1-1">
+              <evidence description="The named transition returned by querying if exists"/>
+            </verificationofEffectiveness>
+            <validation description="Validation of reachability : state {OCM}" number="VA1-1-1-1">
+              <evidence description="FDR model checking results"/>
+            </validation>
+          </controlMeasure>
+        </controlMeasure>
+      </causes>
+    </causes>
+  </hazards>
+</hazardlog_:HazardLog>

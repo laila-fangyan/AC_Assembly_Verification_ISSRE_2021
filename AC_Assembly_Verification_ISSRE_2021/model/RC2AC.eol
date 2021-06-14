@@ -1,0 +1,146 @@
+for(inference in HAC!AssertedInference.allInstances.select(i|i.source.first().name.content = "Query"))
+{
+//inference.target.first().description.content.value.content.first().println();
+inference.source.clear();
+
+
+
+
+
+for ( s in S!State.allInstances().select(s|s.name != "OCM"))
+{
+
+
+//create the claim for this state
+var c= new HAC!Claim;
+
+var name = new HAC!LangString;
+c.name = name;
+c.name.lang = "English";
+c.name.content ="Subclaim for State " + s.name;
+//c.name.content.println();
+
+
+var description = new HAC!Description;
+var content = new HAC!MultiLangString;
+var value = new HAC!LangString;
+value.lang = "English";
+value.content = s.name + " should have an outgoing transition whose trigger is reqOCM, and target is OCM";
+c.description = description;
+c.description.content = content;
+// content.value is Collection
+c.description.content.value.add(value);
+
+//here to link the claim generated in this eol to the inference generated in hazardEMF2SACM.etl
+//the bridge is the "Query"
+inference.source.add(c);
+
+//to verify if this state meets the claim, create evidence. evidence = ArtifaceReference
+
+var trName;
+for (t in S!Transition.allInstances.select(t| t.source.name = s.name and t.target.name = "OCM" and t.trigger.event.isDefined()= true and t.trigger.event.name = "reqOCM"))
+{ 
+
+
+trName = t.name;
+// ("Transition " + trName +" satisfies the claim.").println();
+
+var ar = new HAC!ArtifactReference;
+var name = new HAC!LangString;
+ar.name = name;
+ar.name.lang = "English";
+ar.name.content = "Evidence for Claim of State " + s.name;
+
+
+var description = new HAC!Description;
+var content = new HAC!MultiLangString;
+var value = new HAC!LangString;
+value.lang = "English";
+value.content = "Transition " + trName +" satisfies the claim.";
+ar.description = description;
+ar.description.content = content;
+// content.value is Collection
+ar.description.content.value.add(value);
+
+ar.createAssertedEvidence(c);
+
+}
+
+
+
+
+if (trName.isUndefined())
+{
+
+//(" no transition exists for state " + s.name).println();
+//then need to create the solution for fail
+var ar = new HAC!ArtifactReference;
+var name = new HAC!LangString;
+ar.name = name;
+ar.name.lang = "English";
+ar.name.content = "Evidence for Claim of State " + s.name;
+
+
+var description = new HAC!Description;
+var content = new HAC!MultiLangString;
+var value = new HAC!LangString;
+value.lang = "English";
+
+value.content = "No transition exists satisfing the claim." ;
+ar.description = description;
+ar.description.content = content;
+// content.value is Collection
+ar.description.content.value.add(value);
+
+ar.createAssertedEvidence(c);
+
+}
+
+
+}
+}
+
+
+
+//to delete the original Claim with name of "Query", because the first 4 lines only clear 
+//the source of the inference in the original AC model, the relationship is destroyed, 
+//but not the claim itself
+for(claim in HAC!Claim.allInstances.select(c|c.name.content = "Query"))
+{
+delete claim;
+}
+
+
+
+ //S!Transition.allInstances.select(t| t.source.name = s.name and t.target.name = "OCM" and t.trigger).isDefined())
+
+//S!Transition.allInstances.select(t| t.source.name = s.name and t.target.name = "OCM"  and t.trigger.event.name = "reqOCM").isDefined().println();
+/* {
+ s.generateSolution();
+ }  else
+ s.generateWarning(); 
+
+
+//S!Transition.allInstances.select(t| t.source.name = s.name and t.target.name = "OCM" and t.trigger.event.isDefined()).println();
+}
+}
+
+*/
+operation HAC!ArtifactReference createAssertedEvidence(a: HAC!Claim){
+//build relationship between claim and evidence, relationship = Asserted Evidence
+var evidencerelation = new HAC!AssertedEvidence;
+
+//inference.target = hazard claim
+evidencerelation.target.add(a);
+" ".println();
+//inference.target.first().name.content.print();
+//" ".print();
+evidencerelation.target.first().description.content.value.content.first().println();
+
+evidencerelation.source.add(self);
+//evidencerelation.source.first().name.content.println();
+evidencerelation.source.first().description.content.value.content.first().println();
+
+}
+
+

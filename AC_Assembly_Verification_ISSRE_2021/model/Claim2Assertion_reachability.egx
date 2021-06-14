@@ -1,6 +1,0 @@
-rule Claim2Assertions
- transform p : ArgumentPackage {
- template : "FDR_reachability.egl"
- target : "FDR_reachability.assertions" 
- }
- 
